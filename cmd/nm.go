@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bbb/noisemap"
+	"big-battle-bits/noisemap"
 	"image/png"
 	"os"
 

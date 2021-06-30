@@ -7,7 +7,7 @@ import (
 	"io"
 	"math"
 
-	"bbb/noisemap"
+	"big-battle-bits/noisemap"
 
 	noise "github.com/aquilax/go-perlin"
 )
