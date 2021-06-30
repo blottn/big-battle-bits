@@ -5,8 +5,12 @@ import (
 	"image/color"
 )
 
-type Army map[image.Point]Force
+type Armies map[Team][]image.Point
 
-type Force struct {
-	Color color.Color
-}
+type Team color.Color
+
+var (
+	Black  = color.RGBA{0, 0, 0, 255}
+	Pink   = color.RGBA{244, 3, 252, 255}
+	Orange = color.RGBA{244, 3, 252, 255}
+)
