@@ -1,6 +1,7 @@
 package bf
 
 import (
+    "fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -29,9 +30,9 @@ func centerDist(x, y, width, height int) float64 {
 }
 
 func (bg BattleGround) forceColor(x, y int) color.Color {
-	for point, force := range bg.armies {
+	for point, team := range bg.armies {
 		if point.X == x && point.Y == y {
-			return force.Color
+			return team
 		}
 	}
 	return nil
@@ -86,7 +87,7 @@ func From(reader io.Reader) (*BattleGround, error) {
 	height := bounds.Max.Y
 
 	terrain := image.NewRGBA(bounds)
-	forces := Armies{}
+	armies := Armies{}
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
 			if compareColor(Ocean, img.At(i, j)) {
@@ -95,12 +96,7 @@ func From(reader io.Reader) (*BattleGround, error) {
 				terrain.Set(i, j, Land)
 			} else {
 				col := img.At(i, j)
-				points, ok := armies[col]
-				if !ok {
-					armies[col] = []image.Point{}
-				}
-				armies[col] = append(armies[col], image.Point(i, j))
-
+                armies[image.Point{i,j}] = Team{col}
 			}
 		}
 	}
@@ -112,6 +108,14 @@ func From(reader io.Reader) (*BattleGround, error) {
 		armies,
 	}, nil
 
+}
+
+func (bg BattleGround) Add(team Team, p image.Point) error {
+    if _, ok := bg.armies[p]; ok {
+        return fmt.Errorf("Error adding team to %v, already owned by another team")
+    }
+    bg.armies[p] = team
+    return nil
 }
 
 func (bg BattleGround) Output(writer io.Writer) error {

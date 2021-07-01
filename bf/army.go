@@ -1,16 +1,32 @@
 package bf
 
 import (
+    "encoding/json"
 	"image"
 	"image/color"
 )
-
-type Armies map[Team][]image.Point
-
-type Team color.Color
 
 var (
 	Black  = color.RGBA{0, 0, 0, 255}
 	Pink   = color.RGBA{244, 3, 252, 255}
 	Orange = color.RGBA{244, 3, 252, 255}
 )
+
+type Armies map[image.Point]Team
+
+type Team struct {
+    color.Color
+}
+
+// flag.Value interface
+func (team Team) String() string {
+    bytes, err :=  json.Marshal(team)
+    if err != nil {
+        return err.Error()
+    }
+    return string(bytes)
+}
+
+func (team Team) Set(in string) error {
+    return json.Unmarshal([]byte(in), &team)
+}
