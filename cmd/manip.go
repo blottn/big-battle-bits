@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bbb/bf"
+	"big-battle-bits/bf"
 	"flag"
 	"fmt"
 	"os"
