@@ -19,10 +19,21 @@ func getPriority(p Prioritiser, angle float64) (float64, error) {
     return priority, nil
 }
 
+type Angle float64
+
+func (a1 Angle) Priority(a2 float64) float64 {
+    diff := math.Abs(float64(a1) - a2)
+    weight := math.Cos(diff)
+    if weight < 0 {
+        return 0
+    }
+    return weight
+}
+
+// Hmm i feel like most of this is useless
 type Vector struct {
     x, y float64
 }
-
 
 func NewVector(x, y float64) Vector {
     return Vector{x,y}
