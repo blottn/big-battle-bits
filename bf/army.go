@@ -21,7 +21,7 @@ func (a Armies) overlay(b Armies) {
 }
 
 type Team struct {
-    color.Color
+    Color color.RGBA
 }
 
 // flag.Value interface

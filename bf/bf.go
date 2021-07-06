@@ -42,7 +42,7 @@ func centerDist(x, y, width, height int) float64 {
 func (bg BattleGround) forceColor(x, y int) color.Color {
 	for point, team := range bg.armies {
 		if point.X == x && point.Y == y {
-			return team
+			return team.Color
 		}
 	}
 	return nil
@@ -105,8 +105,8 @@ func From(reader io.Reader) (*BattleGround, error) {
 			} else if compareColor(Land, img.At(i, j)) {
 				terrain.Set(i, j, Land)
 			} else {
-				col := img.At(i, j)
-                armies[image.Point{i,j}] = Team{col}
+				r,g,b,a := img.At(i, j).RGBA()
+                armies[image.Point{i,j}] = Team{color.RGBA{uint8(r),uint8(g),uint8(b),uint8(a)}}
 			}
 		}
 	}
