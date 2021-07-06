@@ -16,6 +16,7 @@ func main() {
     x := flag.Int("x", 100, "x coordinate")
     y := flag.Int("y", 100, "y coordinate")
     flag.Parse()
+    fmt.Printf("Adding team %v to (%d,%d)\n", team, *x, *y)
     if *input == "" {
         fmt.Println("Input file is required")
         flag.Usage()

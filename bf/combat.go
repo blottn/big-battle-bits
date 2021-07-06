@@ -15,7 +15,7 @@ var influencedSquares = []Vector{
     Vector{1,-1},
 }
 
-func StepCombat(bg *BattleGround, orders map[Team]Prioritiser) error {
+func StepCombat(bg *BattleGround, orders Orders) error {
     weights := map[Vector]map[Team]float64{}
     for point, team := range bg.armies {
         p, ok := orders[team]

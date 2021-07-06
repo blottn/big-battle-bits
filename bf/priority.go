@@ -1,11 +1,28 @@
 package bf
 
 import (
+    "encoding/json"
     "fmt"
     "image"
     "math"
 )
-// Commands
+
+type Orders map[Team]Prioritiser
+
+// flag.Value interface
+func (orders Orders) String() string {
+    bytes, err :=  json.Marshal(orders)
+    if err != nil {
+        return err.Error()
+    }
+    return string(bytes)
+}
+
+func (orders Orders) Set(in string) error {
+    return json.Unmarshal([]byte(in), &orders)
+}
+
+
 type Prioritiser interface {
     // Priority returns a value from 0->1 for each angle
     Priority(angle float64) float64

@@ -4,48 +4,38 @@ import (
     "big-battle-bits/bf"
     "flag"
     "fmt"
-    "image"
-    "math"
+    "os"
 )
 
 func main() {
+    var orders bf.Orders
     iter := flag.Int("iter", 100, "Number of iterations to run")
+    input := flag.String("input", "", "Input map file to start from")
+    output := flag.String("output", "", "File to write map to afterwards")
+    flag.Var(&orders, "orders", "Orders per team")
     flag.Parse()
 
-    // DUMMY DATA
-    goDown := bf.NewVector(1,-1)
-    goUp := bf.NewVector(1,1)
-    team1 := bf.Team{bf.Pink}
-    team2 := bf.Team{bf.Black}
-    p := &map[bf.Team]bf.Prioritiser{
-        team1: goUp,
-        team2: goDown,
+    if *input == "" {
+        flag.Usage()
+        fmt.Println("Input file can't be empty")
+        os.Exit(1)
     }
-    // END DUMMY DATA
 
-    bg, err := bf.ReadFromFile("start.png")
-    if err != nil {
-        fmt.Println(err.Error())
+    if *output == "" {
+        flag.Usage()
+        fmt.Println("Output file can't be empty")
+        os.Exit(1)
     }
-    bf.Mutate("start.png", "start.png", addTeam2)
-    bg, err := bf.ReadFromFile("start.png")
+    bg, err := bf.ReadFromFile(*input)
     if err != nil {
         fmt.Println(err.Error())
     }
     for i := 0; i < *iter; i++ {
-        err = bf.StepCombat(bg, *p)
+        err = bf.StepCombat(bg, orders)
         if err !=nil {
             fmt.Println(err.Error())
             return
         }
-        if i > (*iter) / 2 {
-            fmt.Println("redirecting")
-            goDown = bf.NewVector(0, -1)
-            *p = map[bf.Team]bf.Prioritiser{
-                team1: goUp,
-                team2: goDown,
-            }
-        }
     }
-    bf.WriteTo(bg, "end.png")
+    bf.WriteTo(bg, *output)
 }

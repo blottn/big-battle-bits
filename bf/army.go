@@ -25,7 +25,7 @@ type Team struct {
 }
 
 // flag.Value interface
-func (team Team) String() string {
+func (team *Team) String() string {
     bytes, err :=  json.Marshal(team)
     if err != nil {
         return err.Error()
@@ -33,8 +33,8 @@ func (team Team) String() string {
     return string(bytes)
 }
 
-func (team Team) Set(in string) error {
-    return json.Unmarshal([]byte(in), &team)
+func (team *Team) Set(in string) error {
+    return json.Unmarshal([]byte(in), team)
 }
 
 
