@@ -1,21 +1,40 @@
 package main
 
-import "big-battle-bits/bf"
-import "flag"
-import "image"
-
+import (
+    "flag"
+    "fmt"
+    "image"
+    "os"
+    "big-battle-bits/bf"
+)
 
 func main() {
     team := bf.Team{bf.Pink}
-    flag.Var(&team, "-team", "json representation of the color to add")
-    x := flag.Int("-x", 250, "x coordinate")
-    y := flag.Int("-y", 100, "y coordinate")
-    adder := func(bg *bf.BattleGround) (error) {
-        (*bg).Add(team, image.Point{*x,*y})
-        return nil
+    flag.Var(&team, "team", "json representation of the color to add")
+    input := flag.String("input", "", "Input map file to start from")
+    output := flag.String("output", "", "File to write map to afterwards")
+    x := flag.Int("x", 100, "x coordinate")
+    y := flag.Int("y", 100, "y coordinate")
+    flag.Parse()
+    if *input == "" {
+        fmt.Println("Input file is required")
+        flag.Usage()
+        os.Exit(1)
     }
-    bf.Mutate("bg-1.png", "mutated.png", adder)
-    //mutator := func(bg BattleGround) (BattleGround, error) {
-    //    bg.Add()
-    //}
+    if *output == "" {
+        fmt.Println("Output file is required")
+        flag.Usage()
+        os.Exit(1)
+    }
+    b, err := bf.ReadFromFile(*input)
+    if err != nil {
+        fmt.Println(err.Error())
+        os.Exit(1)
+    }
+    b.Add(team, image.Point{*x, *y})
+    err = bf.WriteTo(b, *output)
+    if err != nil {
+        fmt.Println(err.Error())
+        os.Exit(1)
+    }
 }

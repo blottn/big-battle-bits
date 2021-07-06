@@ -14,6 +14,12 @@ var (
 
 type Armies map[image.Point]Team
 
+func (a Armies) overlay(b Armies) {
+    for p, team := range b {
+        a[p] = team
+    }
+}
+
 type Team struct {
     color.Color
 }
@@ -30,3 +36,5 @@ func (team Team) String() string {
 func (team Team) Set(in string) error {
     return json.Unmarshal([]byte(in), &team)
 }
+
+

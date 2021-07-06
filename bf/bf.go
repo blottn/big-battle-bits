@@ -13,6 +13,11 @@ import (
 	noise "github.com/aquilax/go-perlin"
 )
 
+var (
+    Ocean = color.RGBA{0, 68, 128, 255}
+    Land = color.RGBA{0, 155, 0, 255}
+)
+
 type BattleGround struct {
 	width   int
 	height  int
@@ -20,8 +25,13 @@ type BattleGround struct {
 	armies  Armies
 }
 
-var Ocean = color.RGBA{0, 68, 128, 255}
-var Land = color.RGBA{0, 155, 0, 255}
+func (bg BattleGround) Width() int {
+    return bg.width
+}
+
+func (bg BattleGround) Height() int {
+    return bg.height
+}
 
 func centerDist(x, y, width, height int) float64 {
 	xDif := float64(x)/float64(width) - 0.5
@@ -111,11 +121,21 @@ func From(reader io.Reader) (*BattleGround, error) {
 }
 
 func (bg BattleGround) Add(team Team, p image.Point) error {
+    if p.X > bg.width {
+        return fmt.Errorf("Error, tried to add team out of bounds: %v to %v",
+            p,
+            bg.terrain.Bounds(),
+        )
+    }
     if _, ok := bg.armies[p]; ok {
         return fmt.Errorf("Error adding team to %v, already owned by another team")
     }
     bg.armies[p] = team
     return nil
+}
+
+func (bg BattleGround) IsOcean(p image.Point) bool {
+    return bg.terrain.At(p.X, p.Y) == Ocean
 }
 
 func (bg BattleGround) Output(writer io.Writer) error {
