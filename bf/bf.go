@@ -1,7 +1,7 @@
 package bf
 
 import (
-    "fmt"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -14,8 +14,8 @@ import (
 )
 
 var (
-    Ocean = color.RGBA{0, 68, 128, 255}
-    Land = color.RGBA{0, 155, 0, 255}
+	Ocean = color.RGBA{0, 68, 128, 255}
+	Land  = color.RGBA{0, 155, 0, 255}
 )
 
 type BattleGround struct {
@@ -26,11 +26,11 @@ type BattleGround struct {
 }
 
 func (bg BattleGround) Width() int {
-    return bg.width
+	return bg.width
 }
 
 func (bg BattleGround) Height() int {
-    return bg.height
+	return bg.height
 }
 
 func centerDist(x, y, width, height int) float64 {
@@ -105,8 +105,8 @@ func From(reader io.Reader) (*BattleGround, error) {
 			} else if compareColor(Land, img.At(i, j)) {
 				terrain.Set(i, j, Land)
 			} else {
-				r,g,b,a := img.At(i, j).RGBA()
-                armies[image.Point{i,j}] = Team{color.RGBA{uint8(r),uint8(g),uint8(b),uint8(a)}}
+				r, g, b, a := img.At(i, j).RGBA()
+				armies[image.Point{i, j}] = Team{color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}}
 			}
 		}
 	}
@@ -120,22 +120,29 @@ func From(reader io.Reader) (*BattleGround, error) {
 
 }
 
-func (bg BattleGround) Add(team Team, p image.Point) error {
-    if p.X > bg.width {
-        return fmt.Errorf("Error, tried to add team out of bounds: %v to %v",
-            p,
-            bg.terrain.Bounds(),
-        )
-    }
-    if _, ok := bg.armies[p]; ok {
-        return fmt.Errorf("Error adding team to %v, already owned by another team")
-    }
-    bg.armies[p] = team
-    return nil
+func (bg BattleGround) Add(team Team, x, y int) error {
+	return bg.AddAtPoint(team, image.Point{x, y})
+}
+
+func (bg BattleGround) AddAtPoint(team Team, p image.Point) error {
+	if p.X > bg.width {
+		return fmt.Errorf("Error, tried to add team out of bounds: %v to %v",
+			p,
+			bg.terrain.Bounds(),
+		)
+	}
+	if _, ok := bg.armies[p]; ok {
+		return fmt.Errorf("Error adding team to %v, already owned by another team")
+	}
+	if bg.IsOcean(p) {
+		return fmt.Errorf("Error adding team to %v, it's in the water", p)
+	}
+	bg.armies[p] = team
+	return nil
 }
 
 func (bg BattleGround) IsOcean(p image.Point) bool {
-    return bg.terrain.At(p.X, p.Y) == Ocean
+	return bg.terrain.At(p.X, p.Y) == Ocean
 }
 
 func (bg BattleGround) Output(writer io.Writer) error {
