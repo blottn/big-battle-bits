@@ -2,6 +2,7 @@ package bf
 
 import (
 	"encoding/json"
+	"fmt"
 	"image"
 	"image/color"
 )
@@ -37,4 +38,21 @@ func (team *Team) String() string {
 
 func (team *Team) Set(in string) error {
 	return json.Unmarshal([]byte(in), team)
+}
+
+func (t1 Team) Equals(t2 Team) bool {
+	r1, g1, b1, a1 := t1.Color.RGBA()
+	r2, g2, b2, a2 := t2.Color.RGBA()
+	return r1 == r2 && g1 == g2 && b1 == b2 && a1 == a2
+}
+
+type TeamColors map[string]Team
+
+func (teamColors TeamColors) findName(t Team) (string, error) {
+	for name, team := range teamColors {
+		if team.Equals(t) {
+			return name, nil
+		}
+	}
+	return "", fmt.Errorf("Couldn't find name for team %v", t)
 }
