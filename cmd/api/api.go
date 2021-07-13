@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,6 +21,7 @@ func extractGuild(r *http.Request) string {
 
 func main() {
 	dataDir := flag.String("data-dir", "data", "Location where to read and write data")
+	doSave := flag.Bool("do-save", false, "Whether to save after exiting")
 	flag.Parse()
 
 	games := map[string]*game.Game{}
@@ -46,15 +46,20 @@ func main() {
 		sigchan := make(chan os.Signal)
 		signal.Notify(sigchan, os.Interrupt)
 		<-sigchan
-		log.Println("Program killed, running save !")
-		// Save all guild datas to "data-dir/*"
-		for guild, g := range games {
-			err := game.Save(path.Join(*dataDir, guild), g)
-			if err != nil {
-				fmt.Println(err.Error())
-			} else {
-				fmt.Printf("Successfully saved for guild %s\n", guild)
+		fmt.Println("Program killed")
+		if *doSave {
+			fmt.Println("Saving")
+			// Save all guild datas to "data-dir/*"
+			for guild, g := range games {
+				err := game.Save(path.Join(*dataDir, guild), g)
+				if err != nil {
+					fmt.Println(err.Error())
+				} else {
+					fmt.Printf("Successfully saved for guild %s\n", guild)
+				}
 			}
+		} else {
+			fmt.Println("Skipping save")
 		}
 		os.Exit(0)
 	}()
