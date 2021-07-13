@@ -21,6 +21,7 @@ command_handlers = {
     "clonfig": getPlayerConfig,
     "whatsup": getState,
     "start": start,
+    "step": forceStep,
 }
 
 ## Routes
