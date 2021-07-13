@@ -23,20 +23,25 @@ func getGame(games *map[string]*Game, c *gin.Context) (*Game, error) {
 
 func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	router.GET("/games/:guildId", func(c *gin.Context) {
-		guildId := c.Param("guildId")
-		g, ok := (*games)[guildId]
-		if !ok {
-			c.AbortWithError(http.StatusNotFound, fmt.Errorf("GuildId not found %s", guildId))
+		g, err := getGame(games, c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
+
 		c.Data(http.StatusOK, "image/png", bf.AsBytes(&(g.Bg)))
 	})
 
 	// Creates a new game for that guild
 	router.PUT("/games/:guildId", func(c *gin.Context) {
-		guildId := c.Param("guildId")
+		guildId, ok := c.Params.Get("guildId")
+		if !ok {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Requires guildID url parameter"))
+			return
+		}
 		// TODO pull out optional playerconfigs
 		(*games)[guildId] = NewDefaultGame()
+		c.String(200, "Success")
 	})
 
 	router.GET("/state/:guildId", func(c *gin.Context) {
@@ -49,28 +54,18 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	})
 
 	router.GET("/playerConfigs/:guildId", func(c *gin.Context) {
-		guildId, ok := c.Params.Get("guildId")
-		if !ok {
-			c.Abort()
-			return
-		}
-		g, ok := (*games)[guildId]
-		if !ok {
-			c.AbortWithError(http.StatusNotFound, fmt.Errorf("GuildId not found %s", guildId))
+		g, err := getGame(games, c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 		c.JSON(200, g.PCs)
 	})
 
 	router.POST("/playerConfigs/:guildId/:playerId", func(c *gin.Context) {
-		guildId, ok := c.Params.Get("guildId")
-		if !ok {
-			c.Abort() // TODO add errors
-			return
-		}
-		g, ok := (*games)[guildId]
-		if !ok {
-			c.AbortWithError(http.StatusNotFound, fmt.Errorf("GuildId not found %s", guildId))
+		g, err := getGame(games, c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 		playerId, ok := c.Params.Get("playerId")
@@ -80,7 +75,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		}
 
 		var playerConfig PlayerConfig
-		err := c.BindJSON(&playerConfig)
+		err = c.BindJSON(&playerConfig)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
@@ -89,18 +84,13 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	})
 
 	router.PUT("/playerConfigs/:guildId", func(c *gin.Context) {
-		guildId, ok := c.Params.Get("guildId")
-		if !ok {
-			c.Abort() // TODO add errors
-			return
-		}
-		g, ok := (*games)[guildId]
-		if !ok {
-			c.AbortWithError(http.StatusNotFound, fmt.Errorf("GuildId not found %s", guildId))
+		g, err := getGame(games, c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 		var playerConfigs PlayerConfigs
-		err := c.BindJSON(&playerConfigs)
+		err = c.BindJSON(&playerConfigs)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
