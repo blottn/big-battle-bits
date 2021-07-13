@@ -8,6 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func getGame(games *map[string]*Game, c *gin.Context) (*Game, error) {
+	guildId, ok := c.Params.Get("guildId")
+	if !ok {
+		return nil, fmt.Errorf("Requires guildID url parameter")
+	}
+
+	g, ok := (*games)[guildId]
+	if !ok {
+		return nil, fmt.Errorf("No game for guildId %s", guildId)
+	}
+	return g, nil
+}
+
 func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	router.GET("/games/:guildId", func(c *gin.Context) {
 		guildId := c.Param("guildId")
@@ -24,6 +37,15 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		guildId := c.Param("guildId")
 		// TODO pull out optional playerconfigs
 		(*games)[guildId] = NewDefaultGame()
+	})
+
+	router.GET("/state/:guildId", func(c *gin.Context) {
+		g, err := getGame(games, c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		c.String(200, string(g.gamePhase))
 	})
 
 	router.GET("/playerConfigs/:guildId", func(c *gin.Context) {

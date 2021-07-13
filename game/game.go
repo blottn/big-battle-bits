@@ -11,22 +11,30 @@ import (
 	"time"
 )
 
+type Phase string
+
+const (
+	Init     = Phase("init")
+	InCombat = Phase("in_combat")
+)
+
 type Game struct {
-	PCs PlayerConfigs
-	Bg  bf.BattleGround
+	gamePhase Phase
+	PCs       PlayerConfigs
+	Bg        bf.BattleGround `json:"-"` // ignore for marshalling
 }
 
 func NewDefaultGame() *Game {
-	return NewGame(256, 256, int(time.Now().Unix()))
+	return NewGame(Init, 256, 256, int(time.Now().Unix()))
 }
 
-func NewGame(w, h, seed int) *Game {
+func NewGame(p Phase, w, h, seed int) *Game {
 	pcs := PlayerConfigs{}
 	bg := bf.NewBattleGround(w, h, seed)
-	return &Game{pcs, bg}
+	return &Game{p, pcs, bg}
 }
 
-const PlayerConfigsFile = "players.json"
+const StateFile = "state.json"
 const BattleGroundFile = "map.png"
 
 type dirName time.Time
@@ -38,25 +46,25 @@ func Load(savesDir string) (*Game, error) {
 		return nil, err
 	}
 
-	// Do the sort thing!
+	// Find newest save
 	sorter := fsInfoSorter{&subDirs}
 	sort.Sort(sorter)
 	subDirs = *(sorter.f)
 	d := subDirs[0]
 	fmt.Println("Reading save at: " + path.Join(savesDir, d.Name()))
-	pFile, err := os.Open(path.Join(savesDir, d.Name(), PlayerConfigsFile))
+	stateFile, err := os.Open(path.Join(savesDir, d.Name(), StateFile))
 	if err != nil {
 		return nil, err
 	}
-	defer pFile.Close()
+	defer stateFile.Close()
 
-	bs, err := ioutil.ReadAll(pFile)
+	bs, err := ioutil.ReadAll(stateFile)
 	if err != nil {
 		return nil, err
 	}
 
-	var pcs PlayerConfigs
-	err = json.Unmarshal(bs, &pcs)
+	var game Game
+	err = json.Unmarshal(bs, &game)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +73,8 @@ func Load(savesDir string) (*Game, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Game{pcs, *bg}, nil
+	game.Bg = *bg
+	return &game, nil
 }
 
 func Save(savesDir string, game *Game) error {
@@ -78,11 +87,11 @@ func Save(savesDir string, game *Game) error {
 	}
 
 	// Write playerconfigs
-	bs, err := json.Marshal(game.PCs)
+	bs, err := json.Marshal(game)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path.Join(dir, PlayerConfigsFile), bs, 0644)
+	err = ioutil.WriteFile(path.Join(dir, StateFile), bs, 0644)
 	if err != nil {
 		return err
 	}
