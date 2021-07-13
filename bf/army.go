@@ -54,5 +54,5 @@ func (teamColors TeamColors) findName(t Team) (string, error) {
 			return name, nil
 		}
 	}
-	return "", fmt.Errorf("Couldn't find name for team %v", t)
+	return "", fmt.Errorf("Team %v is running rogue with no owning player", t)
 }
