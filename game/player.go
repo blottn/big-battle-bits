@@ -13,3 +13,11 @@ type PlayerConfig struct {
 	Start    image.Point
 	Color    color.Color
 }
+
+func NewDefaultPlayerConfig() PlayerConfig {
+	return PlayerConfig{
+		bf.Angle(0),
+		image.Point{0, 0},
+		color.Black,
+	}
+}

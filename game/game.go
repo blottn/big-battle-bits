@@ -16,6 +16,16 @@ type Game struct {
 	Bg  bf.BattleGround
 }
 
+func NewDefaultGame() *Game {
+	return NewGame(256, 256, int(time.Now().Unix()))
+}
+
+func NewGame(w, h, seed int) *Game {
+	pcs := PlayerConfigs{}
+	bg := bf.NewBattleGround(w, h, seed)
+	return &Game{pcs, bg}
+}
+
 const PlayerConfigsFile = "players.json"
 const BattleGroundFile = "map.png"
 
