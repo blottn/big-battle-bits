@@ -69,6 +69,11 @@ jsons = [
                 "name": "whatsup",
                 "description": "See image of clonflict state",
             },
+            {
+                "type": "1",
+                "name": "step",
+                "description": "Force a step of combat",
+            }
         ]
     }
 ]
