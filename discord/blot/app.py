@@ -18,6 +18,7 @@ command_handlers = {
     "bloop": bloop,
     "ploint": ploint,
     "clolour": clolour,
+    "clonfig": getPlayerConfig,
 }
 
 ## Routes

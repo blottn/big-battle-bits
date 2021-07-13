@@ -1,5 +1,6 @@
 from flask import jsonify
 
+import json
 import requests
 import webcolors
 
@@ -47,7 +48,7 @@ def ploint(data):
         "type": 4,
         "data": {
             "tts": False,
-            "content": "Set clolour for user " + data['member']['user']['username'],
+            "content": "Set direction for user " + data['member']['user']['username'],
             "embeds": [],
             "allowed_mentions": { "parse": [] }
         }
@@ -82,4 +83,18 @@ def clolour(data):
         }
     })
 
+def getPlayerConfig(data):
+    guildId = data['guild_id']
+    user = data['member']['user']['id']
 
+    r = requests.get("http://localhost:8080/playerConfigs/" + guildId)
+    return jsonify({
+        "type": 4,
+        "data": {
+                "tts": False,
+                "content": data['member']['user']['username'] + " config: ```" + json.dumps(r.json()[user]) + "```",
+                "embeds": [],
+                "allowed_mentions": {"parse": []}
+            }
+        })
+    userConfig = r.json()[user]

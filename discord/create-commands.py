@@ -54,8 +54,11 @@ jsons = [
                     },
                 ]
             },
-
-
+            {
+                "type": "1",
+                "name": "clonfig",
+                "description": "Dump your config",
+            },
         ]
     }
 ]
