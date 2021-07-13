@@ -9,7 +9,7 @@ import (
 type PlayerConfigs map[string]PlayerConfig
 
 type PlayerConfig struct {
-	Priority bf.Prioritiser
+	Priority bf.Angle
 	Start    image.Point
 	Color    color.Color
 }

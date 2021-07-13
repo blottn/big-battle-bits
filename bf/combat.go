@@ -2,23 +2,24 @@ package bf
 
 import (
 	"fmt"
+	"image"
 	"math"
 )
 
-var influencedSquares = []Vector{
-	Vector{-1, 1},
-	Vector{0, 1},
-	Vector{1, 1},
-	Vector{-1, 0},
-	Vector{0, 0}, // TODO decide if this is right
-	Vector{1, 0},
-	Vector{-1, -1},
-	Vector{0, -1},
-	Vector{1, -1},
+var influencedSquares = []image.Point{
+	image.Point{-1, 1},
+	image.Point{0, 1},
+	image.Point{1, 1},
+	image.Point{-1, 0},
+	image.Point{0, 0}, // TODO decide if this is right
+	image.Point{1, 0},
+	image.Point{-1, -1},
+	image.Point{0, -1},
+	image.Point{1, -1},
 }
 
 func StepCombat(bg *BattleGround, orders Orders, teamColors TeamColors) error {
-	weights := map[Vector]map[Team]float64{}
+	weights := map[image.Point]map[Team]float64{}
 	for point, team := range bg.armies {
 		// find correct team
 		name, err := teamColors.findName(team)
@@ -30,20 +31,18 @@ func StepCombat(bg *BattleGround, orders Orders, teamColors TeamColors) error {
 			return fmt.Errorf("Missing orders for team %v", team)
 		}
 		for _, square := range influencedSquares {
-			ang := math.Atan2(square.y, square.x)
-			pVal, err := getPriority(p, ang)
-			if err != nil {
-				return err
-			}
-			target := Vector{square.x + float64(point.X), square.y + float64(point.Y)}
-			// make sure there's something at that vector
+			target := point.Add(square)
+
+			// make sure we are already tracking
 			if _, ok := weights[target]; !ok {
 				weights[target] = map[Team]float64{}
 			}
+			// make sure we are already tracking that team
 			if _, ok := weights[target][team]; !ok {
 				weights[target][team] = 0
 			}
-			weights[target][team] += pVal
+			weights[target][team] += p.Priority(math.Atan2(float64(square.Y), float64(square.X)))
+
 		}
 	}
 	newArmies := Armies{}
@@ -52,7 +51,7 @@ func StepCombat(bg *BattleGround, orders Orders, teamColors TeamColors) error {
 		if winner == nil {
 			continue
 		}
-		newArmies[v.toPoint()] = *winner
+		newArmies[v] = *winner
 	}
 
 	for p, _ := range newArmies {
