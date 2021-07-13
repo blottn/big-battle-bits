@@ -51,6 +51,20 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		c.String(200, "Success")
 	})
 
+	router.GET("/games/:guildId/step", func(c *gin.Context) {
+		guildId, ok := c.Params.Get("guildId")
+		if !ok {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Requires guildID url parameter"))
+			return
+		}
+		err := (*games)[guildId].Step()
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		c.String(200, "Success")
+	})
+
 	router.GET("/state/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
 		if err != nil {

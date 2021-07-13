@@ -57,6 +57,12 @@ func (g *Game) Start() error {
 	return nil
 }
 
+func (g *Game) Step() error {
+	orders := g.PCs.getOrders()
+	teamColors := g.PCs.getTeamColors()
+	return bf.StepCombat(&(g.Bg), orders, teamColors)
+}
+
 const StateFile = "state.json"
 const BattleGroundFile = "map.png"
 

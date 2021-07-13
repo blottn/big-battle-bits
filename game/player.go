@@ -8,6 +8,22 @@ import (
 
 type PlayerConfigs map[string]PlayerConfig
 
+func (pcs *PlayerConfigs) getOrders() bf.Orders {
+	orders := bf.Orders{}
+	for name, config := range *pcs {
+		orders[name] = *config.Priority
+	}
+	return orders
+}
+
+func (pcs *PlayerConfigs) getTeamColors() bf.TeamColors {
+	tcs := bf.TeamColors{}
+	for name, config := range *pcs {
+		tcs[name] = bf.Team{*config.Color}
+	}
+	return tcs
+}
+
 type PlayerConfig struct {
 	Priority *bf.Angle
 	Start    *image.Point
