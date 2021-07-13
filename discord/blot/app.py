@@ -1,6 +1,9 @@
 from flask import current_app, flash, jsonify, make_response, redirect, request, url_for, abort
 from flask import Flask
 
+from commands import *
+from utils import *
+
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
 
@@ -10,6 +13,14 @@ PUBLIC_KEY="67b9931e4433f10787aed97c14a30b7296f43a73063e4d37a9c1029b11fd9584"
 verify_key = VerifyKey(bytes.fromhex(PUBLIC_KEY))
 
 app = Flask(__name__)
+
+command_handlers = {
+    "bloop": bloop,
+    "ploint": ploint,
+    "clolour": clolour,
+}
+
+## Routes
 
 @app.route("/")
 def index():
@@ -30,15 +41,21 @@ def ok():
             "type": 1
         })
     else:
-        return jsonify({
-            "type": 4,
-            "data": {
-                "tts": False,
-                "content": "Congrats on sending your command!",
-                "embeds": [],
-                "allowed_mentions": { "parse": [] }
-            }
-        })
+        # Check if game exists
+        ensureGameExists(request.json['guild_id'])
+        name = request.json['data']['options'][0]['name']
+        if name in command_handlers:
+            return command_handlers[name](request.json)
+        else:
+            return jsonify({
+                "type": 4,
+                "data": {
+                    "tts": False,
+                    "content": "Congrats on sending your command!",
+                    "embeds": [],
+                    "allowed_mentions": { "parse": [] }
+                }
+            })
 
 if __name__ == '__main__':
       app.run(port=6969)
