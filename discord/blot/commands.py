@@ -111,7 +111,12 @@ def getState(data):
         "data": {
             "tts": False,
             "content": getBattleStateMessage(),
-            "embeds":[],
+            "embeds":[
+                {
+                    "type": "image",
+                    "url": "https://blot.blottn.ie/battlegrounds/" + guildId,
+                }
+            ],
             "allowed_mentions": {"parse": []}
             }
         })
