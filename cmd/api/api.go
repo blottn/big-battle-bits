@@ -2,10 +2,8 @@ package main
 
 import (
 	"big-battle-bits/game"
-	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -67,31 +65,8 @@ func main() {
 	}()
 
 	router := gin.Default()
-	router.Use(RequestLogger())
 	game.RegisterRoutes(&games, router)
 
 	router.Run(":8080")
 	fmt.Println("Goodbye!")
-}
-
-func RequestLogger() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		fmt.Println("Body:")
-		buf, _ := ioutil.ReadAll(c.Request.Body)
-		rdr1 := ioutil.NopCloser(bytes.NewBuffer(buf))
-		rdr2 := ioutil.NopCloser(bytes.NewBuffer(buf)) //We have to create a new Buffer, because rdr1 will be read.
-
-		fmt.Println(readBody(rdr1)) // Print request body
-
-		c.Request.Body = rdr2
-		c.Next()
-	}
-}
-
-func readBody(reader io.Reader) string {
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
-
-	s := buf.String()
-	return s
 }
