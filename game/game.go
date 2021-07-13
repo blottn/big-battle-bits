@@ -81,7 +81,7 @@ func Save(savesDir string, game *Game) error {
 	saveName := fmt.Sprintf("%d", (time.Now().Unix()))
 	fmt.Println("save dir: " + path.Join(savesDir, saveName))
 	dir := path.Join(savesDir, saveName)
-	err := os.Mkdir(dir, 0700)
+	err := os.MkdirAll(dir, 0700)
 	if err != nil {
 		return err
 	}
