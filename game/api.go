@@ -29,7 +29,9 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		}
 		c.JSON(200, guildIds)
 	})
-	router.GET("/battlegrounds/:guildId", func(c *gin.Context) {
+
+	// nonce is there to break caching (i hope)
+	router.GET("/battlegrounds/:guildId/:nonce", func(c *gin.Context) {
 		g, err := getGame(games, c)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)

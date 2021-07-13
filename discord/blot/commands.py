@@ -1,6 +1,7 @@
 from flask import jsonify
 
 import json
+import random
 import requests
 import webcolors
 
@@ -117,7 +118,7 @@ def forceStep(data):
                 {
                     "type": "image",
                     "image": {
-                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId),
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randInt(0,100000)),
                     }
                 }
             ],
@@ -137,7 +138,7 @@ def getState(data):
                 {
                     "type": "image",
                     "image": {
-                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId),
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randInt(0,100000)),
                     }
                 }
             ],
