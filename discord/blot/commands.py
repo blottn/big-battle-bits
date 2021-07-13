@@ -103,6 +103,28 @@ def getPlayerConfig(data):
         })
     userConfig = r.json()[user]
 
+def forceStep(data):
+    guildId = data['guild_id']
+
+    r = requests.get("http://localhost:8080/games/:guildId/step")
+    print(r)
+    return jsonify({
+        "type": 4,
+        "data": {
+            "tts": False,
+            "content": getBattleStateMessage(),
+            "embeds":[
+                {
+                    "type": "image",
+                    "image": {
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId),
+                    }
+                }
+            ],
+            "allowed_mentions": {"parse": []}
+        }
+    })
+
 def getState(data):
     guildId = data['guild_id']
 
@@ -114,7 +136,9 @@ def getState(data):
             "embeds":[
                 {
                     "type": "image",
-                    "url": "https://blot.blottn.ie/battlegrounds/" + guildId,
+                    "image": {
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId),
+                    }
                 }
             ],
             "allowed_mentions": {"parse": []}
