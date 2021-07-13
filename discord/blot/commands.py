@@ -118,7 +118,7 @@ def forceStep(data):
                 {
                     "type": "image",
                     "image": {
-                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randInt(0,100000)),
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randint(0,100000)),
                     }
                 }
             ],
@@ -138,7 +138,7 @@ def getState(data):
                 {
                     "type": "image",
                     "image": {
-                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randInt(0,100000)),
+                        "url": "https://blot.blottn.ie/battlegrounds/" + str(guildId) + "/" + str(random.randint(0,100000)),
                     }
                 }
             ],
