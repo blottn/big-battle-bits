@@ -59,6 +59,11 @@ jsons = [
                 "name": "clonfig",
                 "description": "Dump your config",
             },
+            {
+                "type": "1",
+                "name": "whatsup",
+                "description": "See image of clonflict state",
+            },
         ]
     }
 ]

@@ -19,6 +19,7 @@ command_handlers = {
     "ploint": ploint,
     "clolour": clolour,
     "clonfig": getPlayerConfig,
+    "whatsup": getState,
 }
 
 ## Routes

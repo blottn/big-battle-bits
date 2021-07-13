@@ -4,6 +4,9 @@ import json
 import requests
 import webcolors
 
+from utils import *
+
+
 ## Commands
 def bloop(data):
     x = 0
@@ -99,3 +102,16 @@ def getPlayerConfig(data):
             }
         })
     userConfig = r.json()[user]
+
+def getState(data):
+    guildId = data['guild_id']
+
+    return jsonify({
+        "type": 4,
+        "data": {
+            "tts": False,
+            "content": getBattleStateMessage(),
+            "embeds":[],
+            "allowed_mentions": {"parse": []}
+            }
+        })
