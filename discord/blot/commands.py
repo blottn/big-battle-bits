@@ -118,7 +118,7 @@ def getState(data):
 
 def start(data):
     guildId = data['guild_id']
-    r = requests.get("http://localhost:8080/start/" + guilId)
+    r = requests.get("http://localhost:8080/start/" + guildId)
     print(r)
     return jsonify({
         "type": 4,
