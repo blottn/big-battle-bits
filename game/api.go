@@ -26,7 +26,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		(*games)[guildId] = NewDefaultGame()
 	})
 
-	router.GET("/PlayerConfigs/:guildId", func(c *gin.Context) {
+	router.GET("/playerConfigs/:guildId", func(c *gin.Context) {
 		guildId, ok := c.Params.Get("guildId")
 		if !ok {
 			c.Abort()
