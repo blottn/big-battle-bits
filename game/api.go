@@ -87,6 +87,9 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
+		if existing, ok := g.PCs[playerId]; ok {
+			playerConfig.Merge(existing)
+		}
 		g.PCs[playerId] = playerConfig
 	})
 

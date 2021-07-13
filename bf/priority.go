@@ -20,10 +20,12 @@ func (orders Orders) Set(in string) error {
 	return json.Unmarshal([]byte(in), &orders)
 }
 
-type Angle float64
+type Angle struct {
+	V float64
+}
 
 func (a1 Angle) Priority(a2 float64) float64 {
-	diff := math.Abs(float64(a1) - a2)
+	diff := math.Abs(a1.V - a2)
 	weight := math.Cos(diff)
 	if weight < 0 {
 		return 0
