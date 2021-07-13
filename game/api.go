@@ -29,7 +29,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		}
 		c.JSON(200, guildIds)
 	})
-	router.GET("/games/:guildId", func(c *gin.Context) {
+	router.GET("/battlegrounds/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
