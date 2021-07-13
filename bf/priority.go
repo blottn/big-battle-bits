@@ -24,8 +24,12 @@ type Angle struct {
 	V float64
 }
 
+func (a Angle) toRad() float64 {
+	return (a.V / 360) * math.Pi * 2.0
+}
+
 func (a1 Angle) Priority(a2 float64) float64 {
-	diff := math.Abs(a1.V - a2)
+	diff := math.Abs(a1.toRad() - a2)
 	weight := math.Cos(diff)
 	if weight < 0 {
 		return 0
