@@ -60,6 +60,7 @@ def colorToRGB(name):
         "R":r,
         "G":g,
         "B":b,
+        "A":255,
     }
 
 

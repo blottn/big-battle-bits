@@ -3,6 +3,7 @@ package game
 import (
 	"big-battle-bits/bf"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -16,6 +17,10 @@ type Phase string
 const (
 	Init     = Phase("init")
 	InCombat = Phase("in_combat") // TODO decide if this should lock
+)
+
+var (
+	IsStartedError = errors.New("This game has already begun")
 )
 
 type Game struct {
@@ -32,6 +37,24 @@ func NewGame(p Phase, w, h, seed int) *Game {
 	pcs := PlayerConfigs{}
 	bg := bf.NewBattleGround(w, h, seed)
 	return &Game{p, pcs, bg}
+}
+
+func (g *Game) IsStarted() bool {
+	return string(g.gamePhase) == "in_combat"
+}
+
+// Launches the game, which commits the player starts and colors
+func (g *Game) Start() error {
+	if g.IsStarted() {
+		return IsStartedError
+	}
+	for _, pc := range g.PCs {
+		err := g.Bg.AddAtPoint(pc.GetTeam(), *(pc.Start))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 const StateFile = "state.json"

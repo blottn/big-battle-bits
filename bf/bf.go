@@ -73,7 +73,7 @@ func NewBattleGround(width, height, seed int) BattleGround {
 		width,
 		height,
 		newTerrain(width, height, nm),
-		nil,
+		Armies{},
 	}
 }
 

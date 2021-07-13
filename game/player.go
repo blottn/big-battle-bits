@@ -33,3 +33,9 @@ func (pc *PlayerConfig) Merge(pc2 PlayerConfig) {
 		pc.Color = pc2.Color
 	}
 }
+
+func (p *PlayerConfig) GetTeam() bf.Team {
+	return bf.Team{
+		*p.Color,
+	}
+}
