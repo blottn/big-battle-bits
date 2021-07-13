@@ -15,7 +15,7 @@ type Phase string
 
 const (
 	Init     = Phase("init")
-	InCombat = Phase("in_combat")
+	InCombat = Phase("in_combat") // TODO decide if this should lock
 )
 
 type Game struct {
