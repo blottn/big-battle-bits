@@ -119,7 +119,9 @@ def getState(data):
 def start(data):
     guildId = data['guild_id']
     r = requests.get("http://localhost:8080/start/" + guildId)
-    print(r)
+    if r.status_code >= 400:
+        return jsonify({"type": 4, "data":{"content":"Error starting game: " + r.text}})
+
     return jsonify({
         "type": 4,
         "data": {
