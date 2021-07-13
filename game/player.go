@@ -22,7 +22,7 @@ func NewDefaultPlayerConfig() PlayerConfig {
 	}
 }
 
-func (pc PlayerConfig) Merge(pc2 PlayerConfig) {
+func (pc *PlayerConfig) Merge(pc2 PlayerConfig) {
 	if pc.Priority == nil {
 		pc.Priority = pc2.Priority
 	}
