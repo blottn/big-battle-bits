@@ -23,7 +23,7 @@ func getGame(games *map[string]*Game, c *gin.Context) (*Game, error) {
 
 func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	router.GET("/games", func(c *gin.Context) {
-		var guildIds []string
+		guildIds := []string{}
 		for guildId, _ := range *games {
 			guildIds = append(guildIds, guildId)
 		}
