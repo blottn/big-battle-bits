@@ -125,7 +125,7 @@ func (bg BattleGround) Add(team Team, x, y int) error {
 }
 
 func (bg BattleGround) AddAtPoint(team Team, p image.Point) error {
-	if p.X > bg.width {
+	if p.X > bg.width || p.Y > bg.height {
 		return fmt.Errorf("Error, tried to add team out of bounds: %v to %v",
 			p,
 			bg.terrain.Bounds(),
