@@ -61,6 +61,11 @@ jsons = [
             },
             {
                 "type": "1",
+                "name": "start",
+                "description": "Begin the weeks conflict",
+            },
+            {
+                "type": "1",
                 "name": "whatsup",
                 "description": "See image of clonflict state",
             },

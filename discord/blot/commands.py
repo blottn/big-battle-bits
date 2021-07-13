@@ -115,3 +115,15 @@ def getState(data):
             "allowed_mentions": {"parse": []}
             }
         })
+
+def start(data):
+    guildId = data['guild_id']
+    r = requests.get("http://localhost:8080/start/" + guilId)
+    print(r)
+    return jsonify({
+        "type": 4,
+        "data": {
+            "content": "Started game for " + guildId + ", updates to location, color. But you are still free to change priority direction."
+        }
+    })
+
