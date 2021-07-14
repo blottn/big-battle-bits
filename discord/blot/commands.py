@@ -97,7 +97,7 @@ def getPlayerConfig(data):
         "type": 4,
         "data": {
                 "tts": False,
-                "content": data['member']['user']['username'] + " config: ```" + json.dumps(r.json()[user]) + "```",
+                "content": data['member']['user']['username'] + " config: ```" + json.dumps(r.json().get(user, {})) + "```",
                 "embeds": [],
                 "allowed_mentions": {"parse": []}
             }
