@@ -52,7 +52,7 @@ def ploint(data):
         "type": 4,
         "data": {
             "tts": False,
-            "content": "Set direction for user " + data['member']['user']['username'] + " to " + data['data']['options'][0]['options'][0]['value'] + " degrees",
+            "content": "Set direction for user " + data['member']['user']['username'] + " to " + str(data['data']['options'][0]['options'][0]['value']) + " degrees",
             "embeds": [],
             "allowed_mentions": { "parse": [] }
         }
@@ -82,7 +82,7 @@ def clolour(data):
         "type": 4,
         "data": {
             "tts": False,
-            "content": "Set clolour for user " + data['member']['user']['username'] + " to: " + playerConfig["color"],
+            "content": "Set clolour for user " + data['member']['user']['username'] + " to: " + json.dumps(playerConfig["color"]),
             "embeds": [],
             "allowed_mentions": { "parse": [] }
         }
