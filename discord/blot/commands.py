@@ -159,3 +159,13 @@ def start(data):
         }
     })
 
+def reset(data):
+    guildId = data['guild_id']
+    r = requests.get("http://localhost:8080/reset/" + guildId)
+    print(r.text)
+    return jsonify({
+        "type": 4,
+        "data": {
+                "content": "Reset game for " + guildId,
+            }
+        })

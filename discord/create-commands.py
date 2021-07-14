@@ -73,7 +73,12 @@ jsons = [
                 "type": "1",
                 "name": "step",
                 "description": "Force a step of combat",
-            }
+            },
+            {
+                "type": "1",
+                "name": "reset",
+                "description": "Reset in case somethings gone badly wrong",
+            },
         ]
     }
 ]

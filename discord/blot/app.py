@@ -20,6 +20,7 @@ command_handlers = {
     "clolour": clolour,
     "clonfig": getPlayerConfig,
     "whatsup": getState,
+    "reset": reset,
     "start": start,
     "step": forceStep,
 }

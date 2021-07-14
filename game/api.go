@@ -134,4 +134,13 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		g.PCs = playerConfigs
 		c.String(200, "Success")
 	})
+	router.GET("/reset/:guildId", func(c *gin.Context) {
+		guildId, ok := c.Params.Get("guildId")
+		if !ok {
+			c.AbortWithError(400, fmt.Errorf("Guild Id is required"))
+			return
+		}
+		(*games)[guildId] = NewDefaultGame()
+		c.String(200, "Success")
+	})
 }
