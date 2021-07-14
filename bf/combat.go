@@ -7,15 +7,15 @@ import (
 )
 
 var influencedSquares = []image.Point{
-	image.Point{-1, 1},
+	//  image.Point{-1, 1},
 	image.Point{0, 1},
-	image.Point{1, 1},
+	//	image.Point{1, 1},
 	image.Point{-1, 0},
-	image.Point{0, 0}, // TODO decide if this is right
+	//	image.Point{0, 0}, // TODO decide if this is right
 	image.Point{1, 0},
-	image.Point{-1, -1},
+	//	image.Point{-1, -1},
 	image.Point{0, -1},
-	image.Point{1, -1},
+	//	image.Point{1, -1},
 }
 
 func StepCombat(bg *BattleGround, orders Orders, teamColors TeamColors) error {
