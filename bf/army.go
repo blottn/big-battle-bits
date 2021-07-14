@@ -56,3 +56,44 @@ func (teamColors TeamColors) findName(t Team) (string, error) {
 	}
 	return "", fmt.Errorf("Team %v is running rogue with no owning player", t)
 }
+
+// Represents the amount various armies control a point
+type ArmyControl map[Team]float64
+
+func (ac ArmyControl) GetWinner() *Team {
+	highest := 0.5 // need at least 0.5 to be considered in control
+	var winner *Team
+	for team, val := range ac {
+		if val > highest {
+			winner = &team
+			highest = val
+		}
+	}
+	return winner
+}
+
+func (ac ArmyControl) AddInfluence(t Team, influence float64) {
+	existing, ok := ac[t]
+	if !ok {
+		existing = 0.0
+	}
+	ac[t] = existing + influence
+}
+
+func TotalControl(t Team) ArmyControl {
+	return ArmyControl(map[Team]float64{t: 1.0})
+}
+
+func (ac ArmyControl) String() string {
+	s := ""
+	for t, v := range ac {
+		s += fmt.Sprintf("%v : %f\n", t, v)
+	}
+	return s
+}
+
+func (ac ArmyControl) Add(ac2 ArmyControl) {
+	for team, v := range ac2 {
+		ac.AddInfluence(team, v)
+	}
+}

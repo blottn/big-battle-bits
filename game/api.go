@@ -143,4 +143,10 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 		(*games)[guildId] = NewDefaultGame()
 		c.String(200, "Success")
 	})
+
+	router.GET("/debug", func(c *gin.Context) {
+		for _, g := range *games {
+			g.Bg.Debug()
+		}
+	})
 }

@@ -22,7 +22,7 @@ type BattleGround struct {
 	width   int
 	height  int
 	terrain image.Image
-	armies  Armies
+	armies  map[image.Point]ArmyControl
 }
 
 func (bg BattleGround) Width() int {
@@ -40,8 +40,12 @@ func centerDist(x, y, width, height int) float64 {
 }
 
 func (bg BattleGround) forceColor(x, y int) color.Color {
-	team, ok := bg.armies[image.Point{x, y}]
+	ac, ok := bg.armies[image.Point{x, y}]
 	if !ok {
+		return nil
+	}
+	team := ac.GetWinner()
+	if team == nil {
 		return nil
 	}
 	return team.Color
@@ -72,7 +76,7 @@ func NewBattleGround(width, height, seed int) BattleGround {
 		width,
 		height,
 		newTerrain(width, height, nm),
-		Armies{},
+		map[image.Point]ArmyControl{},
 	}
 }
 
@@ -96,7 +100,7 @@ func From(reader io.Reader) (*BattleGround, error) {
 	height := bounds.Max.Y
 
 	terrain := image.NewRGBA(bounds)
-	armies := Armies{}
+	armies := map[image.Point]ArmyControl{}
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
 			if compareColor(Ocean, img.At(i, j)) {
@@ -105,7 +109,8 @@ func From(reader io.Reader) (*BattleGround, error) {
 				terrain.Set(i, j, Land)
 			} else {
 				r, g, b, a := img.At(i, j).RGBA()
-				armies[image.Point{i, j}] = Team{color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}}
+				t := Team{color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}}
+				armies[image.Point{i, j}] = TotalControl(t)
 			}
 		}
 	}
@@ -123,6 +128,11 @@ func (bg BattleGround) Add(team Team, x, y int) error {
 	return bg.AddAtPoint(team, image.Point{x, y})
 }
 
+func (bg BattleGround) CanAdd(team Team, p image.Point) bool {
+	_, ok := bg.armies[p]
+	return !ok
+}
+
 func (bg BattleGround) AddAtPoint(team Team, p image.Point) error {
 	if p.X > bg.width || p.Y > bg.height {
 		return fmt.Errorf("Error, tried to add team out of bounds: %v to %v",
@@ -136,7 +146,7 @@ func (bg BattleGround) AddAtPoint(team Team, p image.Point) error {
 	if bg.IsOcean(p) {
 		return fmt.Errorf("Error adding team to %v, it's in the water", p)
 	}
-	bg.armies[p] = team
+	bg.armies[p] = TotalControl(team)
 	return nil
 }
 
@@ -147,6 +157,14 @@ func (bg BattleGround) IsOcean(p image.Point) bool {
 func (bg BattleGround) Output(writer io.Writer) error {
 	encoder := &png.Encoder{png.BestSpeed, nil}
 	return encoder.Encode(writer, bg)
+}
+
+func (bg BattleGround) Debug() {
+	for p, ac := range bg.armies {
+		if ac.GetWinner() == nil {
+			fmt.Printf("p: %v, ac: %s\n", p, ac.String())
+		}
+	}
 }
 
 // image.Image interface
