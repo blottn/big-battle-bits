@@ -107,9 +107,9 @@ def getPlayerConfig(data):
 def forceStep(data):
     guildId = data['guild_id']
     iters = 5
-    opts = data['data']['options'][0]['options']
-    if opts:
-        iters = opts[0]['value']
+    cmd = data['data']['options'][0]
+    if 'options' in cmd:
+        iters = cmd['options'][0]['value']
     
     print("Stepping with " + str(iters) + " iterations")
 
