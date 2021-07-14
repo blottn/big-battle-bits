@@ -33,8 +33,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	// nonce is there to break caching (i hope)
 	router.GET("/battlegrounds/:guildId/:nonce", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 
@@ -45,7 +44,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	router.PUT("/games/:guildId", func(c *gin.Context) {
 		guildId, ok := c.Params.Get("guildId")
 		if !ok {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("Requires guildID url parameter"))
+			Error(c, fmt.Errorf("Requires guildID url parameter"))
 			return
 		}
 		// TODO pull out optional playerconfigs
@@ -55,8 +54,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 	router.GET("/games/:guildId/step", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		g.Step()
@@ -65,8 +63,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 	router.GET("/state/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		c.String(200, string(g.gamePhase))
@@ -74,13 +71,11 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 	router.GET("/start/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		err = g.Start()
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		c.String(200, "Success")
@@ -88,8 +83,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 	router.GET("/playerConfigs/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		c.JSON(200, g.PCs)
@@ -97,8 +91,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 	router.POST("/playerConfigs/:guildId/:playerId", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		playerId, ok := c.Params.Get("playerId")
@@ -109,26 +102,34 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 
 		var playerConfig PlayerConfig
 		err = c.BindJSON(&playerConfig)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		if existing, ok := g.PCs[playerId]; ok {
 			playerConfig.Merge(existing)
 		}
+
+		// Check for collisions
+		for id, pc := range g.PCs {
+			if id != playerId {
+				if playerConfig.HasSameStart(&pc) {
+					Error(c, fmt.Errorf("%s has same start as %s", playerId, id))
+					return
+				}
+			}
+		}
+
 		g.PCs[playerId] = playerConfig
 	})
 
 	router.PUT("/playerConfigs/:guildId", func(c *gin.Context) {
 		g, err := getGame(games, c)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		var playerConfigs PlayerConfigs
 		err = c.BindJSON(&playerConfigs)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+		if Error(c, err) {
 			return
 		}
 		g.PCs = playerConfigs
@@ -137,7 +138,7 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 	router.GET("/reset/:guildId", func(c *gin.Context) {
 		guildId, ok := c.Params.Get("guildId")
 		if !ok {
-			c.AbortWithError(400, fmt.Errorf("Guild Id is required"))
+			Error(c, fmt.Errorf("Guild id is required"))
 			return
 		}
 		(*games)[guildId] = NewDefaultGame()
@@ -149,4 +150,14 @@ func RegisterRoutes(games *map[string]*Game, router *gin.Engine) {
 			g.Bg.Debug()
 		}
 	})
+}
+
+// Utility
+func Error(c *gin.Context, err error) bool {
+	if err != nil {
+		c.Error(err)
+		c.AbortWithStatusJSON(400, gin.H{"status": false, "message": err.Error()})
+		return true // signal that there was an error and the caller should return
+	}
+	return false // no error, can continue
 }

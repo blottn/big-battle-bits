@@ -55,3 +55,7 @@ func (p *PlayerConfig) GetTeam() bf.Team {
 		*p.Color,
 	}
 }
+
+func (p1 *PlayerConfig) HasSameStart(p2 *PlayerConfig) bool {
+	return p1.Start.X == p2.Start.X && p1.Start.Y == p2.Start.Y
+}
