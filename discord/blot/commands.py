@@ -113,7 +113,7 @@ def forceStep(data):
     
     print("Stepping with " + str(iters) + " iterations")
 
-    for i in range(0,5):
+    for i in range(0,iters):
         r = requests.get("http://localhost:8080/games/" + guildId + "/step")
         print(r.text)
     return jsonify({
