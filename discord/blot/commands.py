@@ -106,9 +106,16 @@ def getPlayerConfig(data):
 
 def forceStep(data):
     guildId = data['guild_id']
+    iters = 5
+    opts = data['data']['options'][0]['options']
+    if opts:
+        iters = opts[0]['value']
+    
+    print("Stepping with " + str(iters) + " iterations")
 
-    r = requests.get("http://localhost:8080/games/" + guildId + "/step")
-    print(r.text)
+    for i in range(0,5):
+        r = requests.get("http://localhost:8080/games/" + guildId + "/step")
+        print(r.text)
     return jsonify({
         "type": 4,
         "data": {

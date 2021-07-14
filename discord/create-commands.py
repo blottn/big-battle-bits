@@ -73,6 +73,13 @@ jsons = [
                 "type": "1",
                 "name": "step",
                 "description": "Force a step of combat",
+                "options": [
+                    {
+                        "type": "4",
+                        "name": "steps",
+                        "description": "The number of steps to do, defaults to 5",
+                    },
+                ],
             },
             {
                 "type": "1",
