@@ -40,12 +40,11 @@ func centerDist(x, y, width, height int) float64 {
 }
 
 func (bg BattleGround) forceColor(x, y int) color.Color {
-	for point, team := range bg.armies {
-		if point.X == x && point.Y == y {
-			return team.Color
-		}
+	team, ok := bg.armies[image.Point{x, y}]
+	if !ok {
+		return nil
 	}
-	return nil
+	return team.Color
 }
 
 func getTerrain(x, y, w, h int, nm noisemap.NoiseMap) color.Color {
@@ -146,7 +145,8 @@ func (bg BattleGround) IsOcean(p image.Point) bool {
 }
 
 func (bg BattleGround) Output(writer io.Writer) error {
-	return png.Encode(writer, bg)
+	encoder := &png.Encoder{png.BestSpeed, nil}
+	return encoder.Encode(writer, bg)
 }
 
 // image.Image interface
